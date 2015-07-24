@@ -18,6 +18,18 @@
                 };
     })();
 
+    function readCoordination(index){
+        if(index < nodes.length - 1){
+            return [nodes[index], nodes[index + 1]];
+        }else{
+            return [nodes[index], nodes[0]];
+        }
+    }
+
+    function moveSignal(pointStart, pointEnd, signalSpeed){
+
+    }
+
     function drawDots(dots, context){
         context.fillStyle="#66FF66";
         for(var i = 0; i < dots.length; i++){
@@ -27,7 +39,7 @@
             if(i < dots.length - 1){
                 drawLine(myDots[i].x, myDots[i].y, myDots[i + 1].x, myDots[i + 1].y, context);
             }else{
-                drawLine(myDots[i].x, myDots[i].y, myDots[0].x, myDots[0].y, context)
+                drawLine(myDots[i].x, myDots[i].y, myDots[0].x, myDots[0].y, context);
             }
         }
     }
@@ -44,7 +56,6 @@
         context.beginPath();
         context.arc(mySignal.x, mySignal.y, mySignal.radius, mySignal.sAngle, mySignal.eAngel, mySignal.counterclockwise);
         context.fillStyle = '#FFFFFF';
-        context.rotate(mySignal.rotate * Math.PI / 180);
         context.fill();
     }
 
@@ -52,7 +63,7 @@
         // update
         var time = (new Date()).getTime() - startTime;
 
-        var linearSpeed = 20; // pixels / second
+        var linearSpeed = 50; // pixels / second
 
         var diffX = 80;
         var diffY = 82;
@@ -105,7 +116,6 @@
         new Coordinate(200, 18),
         new Coordinate(150, 100),
     ];
-
 
     var mySignal = {
         x: 70,
