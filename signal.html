@@ -1,0 +1,126 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <style>
+        body {
+            margin: 0px;
+            padding: 0px;
+        }
+    </style>
+</head>
+<body>
+<canvas id="myCanvas" width="300" height="300"></canvas>
+<script>
+    window.requestAnimFrame = (function(callback) {
+        return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+                function(callback) {
+                    window.setTimeout(callback, 1000 / 60);
+                };
+    })();
+
+    function drawDots(dots, context){
+        context.fillStyle="#66FF66";
+        for(var i = 0; i < dots.length; i++){
+            context.beginPath();
+            context.arc(myDots[i].x, myDots[i].y, myDots[i].radius, myDots[i].sAngle, myDots[i].eAngle, myDots[i].counterclockwise);
+            context.fill();
+            if(i < dots.length - 1){
+                drawLine(myDots[i].x, myDots[i].y, myDots[i + 1].x, myDots[i + 1].y, context);
+            }else{
+                drawLine(myDots[i].x, myDots[i].y, myDots[0].x, myDots[0].y, context)
+            }
+        }
+    }
+
+    function drawLine(startX, startY, endX, endY, context){
+        context.lineWidth = 0.5;
+        context.strokeStyle = "#66FF66";
+        context.moveTo(startX, startY);
+        context.lineTo(endX, endY);
+        context.stroke();
+    }
+
+    function drawSignal(mySignal, context) {
+        context.beginPath();
+        context.arc(mySignal.x, mySignal.y, mySignal.radius, mySignal.sAngle, mySignal.eAngel, mySignal.counterclockwise);
+        context.fillStyle = '#FFFFFF';
+        context.rotate(mySignal.rotate * Math.PI / 180);
+        context.fill();
+    }
+
+    function animate(myDots, mySignal, canvas, context, startTime) {
+        // update
+        var time = (new Date()).getTime() - startTime;
+
+        var linearSpeed = 20; // pixels / second
+
+        var diffX = 80;
+        var diffY = 82;
+        var angleAlpha =  Math.atan(diffY / diffX);
+        var deltaX = Math.cos(angleAlpha) * linearSpeed * time / 1000;
+        var deltaY = Math.sin(angleAlpha) * linearSpeed * time / 1000;
+
+        if((mySignal.x + deltaX < 150) && (mySignal.y + deltaY < 100)) {
+            mySignal.x = mySignal.x + deltaX;
+            mySignal.y = mySignal.y + deltaY;
+        }
+
+        // clear canvas
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        drawDots(myDots, context);
+        drawSignal(mySignal, context);
+
+        // request new frame
+        requestAnimFrame(function() {
+            animate(myDots, mySignal, canvas, context, startTime);
+        });
+    }
+    var canvas = document.getElementById('myCanvas');
+    canvas.style.background = "#303030";
+    var context = canvas.getContext('2d');
+
+    function Dot(x, y, radius, sAngle, eAngle, counterclockwise){
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        this.sAngle = sAngle;
+        this.eAngle = eAngle;
+        this.counterclockwise = counterclockwise;
+    }
+
+    function Coordinate(x, y){
+        this.x = x;
+        this.y = y;
+    }
+
+    var myDots = [
+        new Dot(70, 18, 5, 0, Math.PI*2, true),
+        new Dot(200, 18, 5, 0, Math.PI*2, true),
+        new Dot(150, 100, 5, 0, Math.PI*2, true),
+    ];
+
+    var nodes = [
+        new Coordinate(70, 18),
+        new Coordinate(200, 18),
+        new Coordinate(150, 100),
+    ];
+
+
+    var mySignal = {
+        x: 70,
+        y: 18,
+        radius: 2,
+        sAngle: 0,
+        eAngel: Math.PI*2,
+        counterclockwise: true
+    };
+
+    drawDots(myDots, context);
+    drawSignal(mySignal, context);
+
+    animate(myDots, mySignal, canvas, context, new Date().getTime());
+
+</script>
+</body>
+</html>  
